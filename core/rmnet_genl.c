@@ -154,7 +154,7 @@ void rmnet_boost_for_pid(pid_t pid, int boost_enable,
 
 			/* PID Match found */
 			rm_err("CORE_BOOST: enable boost for pid %d for %d ms",
-			       pid, boost_period);
+			       pid, (int)boost_period);
 			node_p->sched_boost_enable = boost_enable;
 			node_p->sched_boost_period_ms = boost_period;
 			break;
@@ -343,7 +343,7 @@ int rmnet_core_genl_pid_boost_req_hdlr(struct sk_buff *skb_2,
 	u16 boost_pid_cnt = RMNET_CORE_GENL_MAX_PIDS;
 	u16 i = 0;
 
-	rm_err("%s", "CORE_GNL: %s", __func__);
+	rm_err("%s", "CORE_GNL: rmnet_core_genl_pid_boost_req_hdlr");
 
 	if (!info) {
 		rm_err("%s", "CORE_GNL: error - info is null");

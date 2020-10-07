@@ -32,8 +32,8 @@ static int rmnet_ctl_send_mhi(struct rmnet_ctl_dev *dev, struct sk_buff *skb)
 
 	spin_lock_bh(&ctl_dev->tx_lock);
 
-	rc = mhi_queue_transfer(ctl_dev->mhi_dev,
-				DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+	rc = mhi_queue_buf(ctl_dev->mhi_dev,
+			   DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
 	if (rc)
 		dev->stats.tx_err++;
 	else
@@ -70,8 +70,8 @@ static void rmnet_ctl_alloc_buffers(struct rmnet_ctl_mhi_dev *ctl_dev,
 			return;
 
 		spin_lock_bh(&ctl_dev->rx_lock);
-		rc = mhi_queue_transfer(mhi_dev, DMA_FROM_DEVICE,
-					buf, ctl_dev->mru, MHI_EOT);
+		rc = mhi_queue_buf(mhi_dev, DMA_FROM_DEVICE,
+				   buf, ctl_dev->mru, MHI_EOT);
 		spin_unlock_bh(&ctl_dev->rx_lock);
 
 		if (rc) {
@@ -123,7 +123,7 @@ static void rmnet_ctl_ul_callback(struct mhi_device *mhi_dev,
 }
 
 static void rmnet_ctl_status_callback(struct mhi_device *mhi_dev,
-				      enum MHI_CB mhi_cb)
+				      enum mhi_callback mhi_cb)
 {
 	struct rmnet_ctl_mhi_dev *ctl_dev = dev_get_drvdata(&mhi_dev->dev);
 
