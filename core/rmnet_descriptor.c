@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2013-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -732,12 +732,12 @@ static struct sk_buff *rmnet_alloc_skb(struct rmnet_frag_descriptor *frag_desc,
 	if (frag_desc->hdrs_valid) {
 		u16 hdr_len = frag_desc->ip_len + frag_desc->trans_len;
 
-		head_skb = alloc_skb(hdr_len + RMNET_MAP_DEAGGR_HEADROOM,
+		head_skb = alloc_skb(hdr_len + RMNET_MAP_DESC_HEADROOM,
 				     GFP_ATOMIC);
 		if (!head_skb)
 			return NULL;
 
-		skb_reserve(head_skb, RMNET_MAP_DEAGGR_HEADROOM);
+		skb_reserve(head_skb, RMNET_MAP_DESC_HEADROOM);
 		rmnet_frag_copy_data(frag_desc, 0, hdr_len,
 				     skb_put(head_skb, hdr_len));
 		skb_reset_network_header(head_skb);
@@ -757,12 +757,12 @@ static struct sk_buff *rmnet_alloc_skb(struct rmnet_frag_descriptor *frag_desc,
 		/* Allocate enough space to avoid penalties in the stack
 		 * from __pskb_pull_tail()
 		 */
-		head_skb = alloc_skb(256 + RMNET_MAP_DEAGGR_HEADROOM,
+		head_skb = alloc_skb(256 + RMNET_MAP_DESC_HEADROOM,
 				     GFP_ATOMIC);
 		if (!head_skb)
 			return NULL;
 
-		skb_reserve(head_skb, RMNET_MAP_DEAGGR_HEADROOM);
+		skb_reserve(head_skb, RMNET_MAP_DESC_HEADROOM);
 	}
 
 	shinfo = skb_shinfo(head_skb);

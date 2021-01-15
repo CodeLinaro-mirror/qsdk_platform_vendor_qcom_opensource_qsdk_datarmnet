@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2013-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -743,6 +743,10 @@ int rmnet_get_dlmarker_info(void *port)
 		RMNET_INGRESS_FORMAT_DL_MARKER_V2);
 }
 EXPORT_SYMBOL(rmnet_get_dlmarker_info);
+
+/* ***************** Callback Hooks ***************************************** */
+struct rmnet_nss_cb *rmnet_nss_callbacks __rcu __read_mostly;
+EXPORT_SYMBOL(rmnet_nss_callbacks);
 
 /* Startup/Shutdown */
 
