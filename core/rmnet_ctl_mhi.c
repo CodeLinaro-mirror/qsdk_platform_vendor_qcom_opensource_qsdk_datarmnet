@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
  *
  * RMNET_CTL mhi handler
  *
@@ -34,8 +34,11 @@ static int rmnet_ctl_send_mhi(struct rmnet_ctl_dev *dev, struct sk_buff *skb)
 
 	rc = mhi_queue_buf(ctl_dev->mhi_dev,
 			   DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
-	if (rc)
+	if (rc){
+		pr_err("%s(): mhi_queue_buf failed, rc = %d\n",
+		       __func__, rc);
 		dev->stats.tx_err++;
+	}
 	else
 		dev->stats.tx_pkts++;
 
