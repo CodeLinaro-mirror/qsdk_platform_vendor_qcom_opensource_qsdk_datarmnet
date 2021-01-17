@@ -364,7 +364,7 @@ void rmnet_vnd_setup(struct net_device *rmnet_dev)
 	/* Raw IP mode */
 	rmnet_dev->header_ops = NULL;  /* No header */
 	rmnet_dev->type = ARPHRD_RAWIP;
-	rmnet_dev->hard_header_len = 0;
+	rmnet_dev->hard_header_len = RMNET_QMAP_HEADER_LENGTH;
 	rmnet_dev->flags &= ~(IFF_BROADCAST | IFF_MULTICAST);
 
 	rmnet_dev->needs_free_netdev = true;

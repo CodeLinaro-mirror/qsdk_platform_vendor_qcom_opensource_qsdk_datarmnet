@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014, 2016-2020 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2013-2014, 2016-2021 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,6 +17,7 @@
 #define RMNET_DFLT_PACKET_SIZE     1500
 #define RMNET_NEEDED_HEADROOM      16
 #define RMNET_TX_QUEUE_LEN         1000
+#define RMNET_QMAP_HEADER_LENGTH   4
 
 /* Constants */
 #define RMNET_EGRESS_FORMAT_AGGREGATION         BIT(31)
