@@ -102,21 +102,25 @@ void
 rmnet_deliver_skb(struct sk_buff *skb, struct rmnet_port *port)
 {
 	int (*rmnet_shs_stamp)(struct sk_buff *skb, struct rmnet_port *port);
+	struct rmnet_priv *priv = netdev_priv(skb->dev);
 	struct rmnet_nss_cb *nss_cb;
 
 	trace_rmnet_low(RMNET_MODULE, RMNET_DLVR_SKB, 0xDEF, 0xDEF,
 			0xDEF, 0xDEF, (void *)skb, NULL);
+	rmnet_vnd_rx_fixup(skb->dev, skb->len);
 
-		 /* Pass off the packet to NSS driver if we can */
-	nss_cb = rcu_dereference(rmnet_nss_callbacks);
-	if (nss_cb) {
-		if (!port->chain_head)
-			port->chain_head = skb;
-		else
-			skb_shinfo(port->chain_tail)->frag_list = skb;
+	/* Pass off the packet to NSS driver if we can */
+	if (priv->offload) {
+		nss_cb = rcu_dereference(rmnet_nss_callbacks);
+		if (nss_cb) {
+			if (!port->chain_head)
+				port->chain_head = skb;
+			else
+				skb_shinfo(port->chain_tail)->frag_list = skb;
 
-		port->chain_tail = skb;
-		return;
+			port->chain_tail = skb;
+			return;
+		}
 	}
 
 	skb_reset_transport_header(skb);
