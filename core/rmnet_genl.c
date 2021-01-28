@@ -292,21 +292,31 @@ int rmnet_core_genl_pid_bps_req_hdlr(struct sk_buff *skb_2,
 				     struct genl_info *info)
 {
 	struct nlattr *na;
-	struct rmnet_core_pid_bps_req  pid_bps_req;
-	struct rmnet_core_pid_bps_resp pid_bps_resp;
+	struct rmnet_core_pid_bps_req  *pid_bps_req;
+	struct rmnet_core_pid_bps_resp *pid_bps_resp;
 	int is_req_valid = 0;
+
+	pid_bps_req = kzalloc(sizeof(*pid_bps_req), GFP_ATOMIC);
+	if(!pid_bps_req)
+		return -ENOMEM;
+
+	pid_bps_resp = kzalloc(sizeof(*pid_bps_resp), GFP_ATOMIC);
+	if(!pid_bps_resp){
+		kfree(pid_bps_req);
+		return -ENOMEM;
+	}
 
 	rm_err("CORE_GNL: %s connected = %d", __func__,
 	       rmnet_core_userspace_connected);
 
 	if (!info) {
 		rm_err("%s", "CORE_GNL: error - info is null");
-		pid_bps_resp.valid = 0;
+		pid_bps_resp->valid = 0;
 	} else {
 		na = info->attrs[RMNET_CORE_GENL_ATTR_PID_BPS];
 		if (na) {
-			if (nla_memcpy(&pid_bps_req, na,
-				       sizeof(pid_bps_req)) > 0) {
+			if (nla_memcpy(pid_bps_req, na,
+				       sizeof(*pid_bps_req)) > 0) {
 				is_req_valid = 1;
 			} else {
 				rm_err("CORE_GNL: nla_memcpy failed %d\n",
@@ -322,14 +332,15 @@ int rmnet_core_genl_pid_bps_req_hdlr(struct sk_buff *skb_2,
 		rmnet_core_userspace_connected = 1;
 
 	/* Copy to pid/byte list to the payload */
-	memset(&pid_bps_resp, 0x0,
-	       sizeof(pid_bps_resp));
 	if (is_req_valid) {
-		rmnet_create_pid_bps_resp(&pid_bps_resp);
+		rmnet_create_pid_bps_resp(pid_bps_resp);
 	}
-	pid_bps_resp.valid = 1;
+	pid_bps_resp->valid = 1;
 
-	rmnet_core_genl_send_resp(info, &pid_bps_resp);
+	rmnet_core_genl_send_resp(info, pid_bps_resp);
+
+	kfree(pid_bps_req);
+	kfree(pid_bps_resp);
 
 	return RMNET_GENL_SUCCESS;
 }
