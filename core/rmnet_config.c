@@ -478,10 +478,11 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
 	}
 
 	if (data[IFLA_RMNET_DFC_QOS]) {
+		struct nlattr *qos = data[IFLA_RMNET_DFC_QOS];
 		struct tcmsg *tcm;
 
-		tcm = nla_data(data[IFLA_RMNET_DFC_QOS]);
-		qmi_rmnet_change_link(dev, port, tcm);
+		tcm = nla_data(qos);
+		qmi_rmnet_change_link(dev, port, tcm, nla_len(qos));
 	}
 
 	if (data[IFLA_RMNET_UL_AGG_PARAMS]) {
