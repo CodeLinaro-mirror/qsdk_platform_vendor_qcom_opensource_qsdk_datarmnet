@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -1293,7 +1293,7 @@ void qmi_rmnet_work_exit(void *port)
 
 	rmnet_work_inited = false;
 	alarm_cancel(&rmnet_work->atimer);
-	cancel_delayed_work_sync(&rmnet_work->work);
+	cancel_delayed_work(&rmnet_work->work);
 	destroy_workqueue(rmnet_ps_wq);
 	qmi_rmnet_work_set_active(port, 0);
 	rmnet_ps_wq = NULL;
