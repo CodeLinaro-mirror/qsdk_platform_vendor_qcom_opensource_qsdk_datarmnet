@@ -1585,7 +1585,7 @@ void qmi_rmnet_work_exit(void *port)
 
 	rmnet_work_inited = false;
 	alarm_cancel(&rmnet_work->atimer);
-	cancel_delayed_work_sync(&rmnet_work->work);
+	cancel_delayed_work(&rmnet_work->work);
 	destroy_workqueue(rmnet_ps_wq);
 	qmi_rmnet_work_set_active(port, 0);
 	rmnet_ps_wq = NULL;
