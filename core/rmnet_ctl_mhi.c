@@ -32,7 +32,7 @@ static int rmnet_ctl_send_mhi(struct rmnet_ctl_dev *dev, struct sk_buff *skb)
 
 	spin_lock_bh(&ctl_dev->tx_lock);
 
-	rc = mhi_queue_buf(ctl_dev->mhi_dev,
+	rc = mhi_queue_skb(ctl_dev->mhi_dev,
 			   DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
 	if (rc){
 		pr_err("%s(): mhi_queue_buf failed, rc = %d\n",
