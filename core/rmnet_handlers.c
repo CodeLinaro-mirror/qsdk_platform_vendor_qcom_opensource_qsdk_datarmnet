@@ -130,7 +130,6 @@ rmnet_deliver_skb(struct sk_buff *skb, struct rmnet_port *port)
 
 	skb_reset_transport_header(skb);
 	skb_reset_network_header(skb);
-	rmnet_vnd_rx_fixup(skb->dev, skb->len);
 
 	skb->pkt_type = PACKET_HOST;
 	skb_set_mac_header(skb, 0);
