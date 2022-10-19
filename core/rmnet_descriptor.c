@@ -775,6 +775,15 @@ static struct sk_buff *rmnet_alloc_skb(struct rmnet_frag_descriptor *frag_desc,
 
 add_frag:
 		if (shinfo->nr_frags < MAX_SKB_FRAGS) {
+			//Pull the first 64 bytes for the Network and Transport header
+			u32 offset = (frag_size < 64) ? frag_size : 64;
+
+			memcpy(head_skb->data, skb_frag_address(&frag->frag), offset);
+			frag->frag.bv_offset += offset;
+			frag->frag.bv_len -= offset;
+			head_skb->tail += offset;
+			head_skb->len += offset;
+
 			get_page(p);
 			skb_add_rx_frag(current_skb, shinfo->nr_frags, p,
 					skb_frag_off(&frag->frag), frag_size,
