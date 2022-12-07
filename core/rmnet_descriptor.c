@@ -794,6 +794,7 @@ add_frag:
 			head_skb->len += offset;
 
 			get_page(p);
+			frag_size = skb_frag_size(&frag->frag);
 			skb_add_rx_frag(current_skb, shinfo->nr_frags, p,
 					skb_frag_off(&frag->frag), frag_size,
 					frag_size);
