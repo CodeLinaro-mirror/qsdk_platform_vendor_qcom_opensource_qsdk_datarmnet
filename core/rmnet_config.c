@@ -51,6 +51,9 @@
  * same context.
  */
 
+extern unsigned long long nr_rmnet_pkts;
+extern unsigned long long rmnet_rx_bytes;
+
 /* Local Definitions and Declarations */
 
 enum {
@@ -214,6 +217,9 @@ static int rmnet_newlink(struct net *src_net, struct net_device *dev,
 	u32 data_format;
 	int err = 0;
 	u16 mux_id;
+
+	nr_rmnet_pkts = 0;
+	rmnet_rx_bytes = 0;
 
 	real_dev = __dev_get_by_index(src_net, nla_get_u32(tb[IFLA_LINK]));
 	if (!real_dev || !dev)
