@@ -110,15 +110,23 @@ static int rmnet_unregister_real_device(struct net_device *real_dev,
 	return 0;
 }
 
-static int rmnet_register_real_device(struct net_device *real_dev)
+static int rmnet_register_real_device(struct net_device *real_dev,
+				      struct netlink_ext_ack *extack)
 {
 	struct rmnet_port *port;
 	int rc, entry;
 
 	ASSERT_RTNL();
 
-	if (rmnet_is_real_dev_registered(real_dev))
+	if (rmnet_is_real_dev_registered(real_dev)) {
+		port = rmnet_get_port_rtnl(real_dev);
+		if (port->rmnet_mode != RMNET_EPMODE_VND) {
+			NL_SET_ERR_MSG_MOD(extack, "bridge device already exists");
+			return -EINVAL;
+		}
+
 		return 0;
+	}
 
 	port = kzalloc(sizeof(*port), GFP_ATOMIC);
 	if (!port)
@@ -228,7 +236,7 @@ static int rmnet_newlink(struct net *src_net, struct net_device *dev,
 
 	mux_id = nla_get_u16(data[IFLA_RMNET_MUX_ID]);
 
-	err = rmnet_register_real_device(real_dev);
+	err = rmnet_register_real_device(real_dev, extack);
 	if (err)
 		goto err0;
 
@@ -312,8 +320,6 @@ static void rmnet_dellink(struct net_device *dev, struct list_head *head)
 	if (!port->nr_rmnet_devs)
 		qmi_rmnet_qmi_exit(port->qmi_info, port);
 
-	unregister_netdevice(dev);
-
 	qmi_rmnet_qos_exit_post();
 
 	if (priv->offload)
@@ -321,6 +327,7 @@ static void rmnet_dellink(struct net_device *dev, struct list_head *head)
 
 	netdev_upper_dev_unlink(real_dev, dev);
 	rmnet_unregister_real_device(real_dev, port);
+	unregister_netdevice(dev);
 }
 
 static void rmnet_force_unassociate_device(struct net_device *real_dev)
@@ -621,7 +628,7 @@ int rmnet_add_bridge(struct net_device *rmnet_dev,
 	if (rmnet_is_real_dev_registered(slave_dev))
 		return -EBUSY;
 
-	err = rmnet_register_real_device(slave_dev);
+	err = rmnet_register_real_device(slave_dev, extack);
 	if (err)
 		return -EBUSY;
 
