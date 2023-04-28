@@ -345,6 +345,9 @@ static void rmnet_force_unassociate_device(struct net_device *real_dev)
 	LIST_HEAD(list);
 	HLIST_HEAD(cleanup_list);
 
+	if (!rmnet_is_real_dev_registered(real_dev))
+		return;
+
 	ASSERT_RTNL();
 
 	port = rmnet_get_port_rtnl(real_dev);
@@ -389,7 +392,7 @@ static int rmnet_config_notify_cb(struct notifier_block *nb,
 	struct net_device *real_dev = netdev_notifier_info_to_dev(data);
 	int rc;
 
-	if (!rmnet_is_real_dev_registered(real_dev))
+	if (!real_dev)
 		return NOTIFY_DONE;
 
 	switch (event) {
