@@ -225,6 +225,7 @@ static int rmnet_newlink(struct net *src_net, struct net_device *dev,
 	u32 data_format;
 	int err = 0;
 	u16 mux_id;
+	struct rmnet_priv *priv;
 
 	nr_rmnet_pkts = 0;
 	rmnet_rx_bytes = 0;
@@ -285,6 +286,14 @@ static int rmnet_newlink(struct net *src_net, struct net_device *dev,
 		if (nla_get_u8(data[IFLA_RMNET_NSS_OFFLOAD]))
 			rmnet_nss_register(dev, priv);
 	}
+
+	/*
+	 * Temporary: Forcing traffic offload
+	 *
+	 * TODO: Check if a non-offload-support host is connected.
+	 */
+	priv = netdev_priv(dev);
+	rmnet_nss_register(dev, priv);
 
 	return 0;
 
