@@ -53,8 +53,11 @@ static void rmnet_ctl_alloc_buffers(struct rmnet_ctl_mhi_dev *ctl_dev,
 	struct mhi_device *mhi_dev = ctl_dev->mhi_dev;
 	void *buf;
 	int no_tre, i, rc;
-
+#ifdef LINUX_5_4
 	no_tre = mhi_get_no_free_descriptors(mhi_dev, DMA_FROM_DEVICE);
+#else
+	no_tre = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
+#endif
 
 	if (!no_tre && free_buf) {
 		kfree(free_buf);
@@ -207,7 +210,9 @@ static int __init rmnet_ctl_init(void)
 	int rc;
 
 	rc = mhi_driver_register(&rmnet_ctl_driver);
+#ifdef LINUX_5_4
 	rmnet_ctl_set_dbgfs(true);
+#endif
 
 	return rc;
 }
@@ -215,7 +220,9 @@ static int __init rmnet_ctl_init(void)
 static void __exit rmnet_ctl_exit(void)
 {
 	mhi_driver_unregister(&rmnet_ctl_driver);
+#ifdef LINUX_5_4
 	rmnet_ctl_set_dbgfs(false);
+#endif
 }
 
 module_init(rmnet_ctl_init)

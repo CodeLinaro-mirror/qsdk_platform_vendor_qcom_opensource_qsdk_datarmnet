@@ -6,9 +6,12 @@
  */
 
 #include <linux/debugfs.h>
+#ifdef LINUX_5_4
 #include <linux/ipc_logging.h>
+#endif
 #include "rmnet_ctl.h"
 #include "rmnet_ctl_client.h"
+
 
 #define RMNET_CTL_LOG_PAGE 10
 #define RMNET_CTL_LOG_NAME "rmnet_ctl"
@@ -39,6 +42,7 @@ static u8 ipc_log_lvl = RMNET_CTL_LOG_ERR;
 static DEFINE_SPINLOCK(client_lock);
 static struct rmnet_ctl_endpoint ctl_ep;
 
+#ifdef LINUX_5_4
 void rmnet_ctl_set_dbgfs(bool enable)
 {
 	if (enable) {
@@ -62,6 +66,7 @@ void rmnet_ctl_set_dbgfs(bool enable)
 		ctl_ep.ipc_log = NULL;
 	}
 }
+#endif
 
 void rmnet_ctl_endpoint_setdev(const struct rmnet_ctl_dev *dev)
 {
@@ -135,8 +140,9 @@ void *rmnet_ctl_register_client(struct rmnet_ctl_client_hooks *hook)
 
 	spin_unlock(&client_lock);
 
+#ifdef LINUX_5_4
 	rmnet_ctl_set_dbgfs(true);
-
+#endif
 	return client;
 }
 EXPORT_SYMBOL(rmnet_ctl_register_client);
@@ -159,8 +165,9 @@ int rmnet_ctl_unregister_client(void *handle)
 	synchronize_rcu();
 	kfree(client);
 
+#ifdef LINUX_5_4
 	rmnet_ctl_set_dbgfs(false);
-
+#endif
 	return 0;
 }
 EXPORT_SYMBOL(rmnet_ctl_unregister_client);
@@ -194,6 +201,7 @@ EXPORT_SYMBOL(rmnet_ctl_send_client);
 void rmnet_ctl_log(enum rmnet_ctl_log_lvl lvl, const char *msg,
 		   int rc, const void *data, unsigned int len)
 {
+#ifdef LINUX_5_4
 	if (lvl <= ipc_log_lvl && ctl_ep.ipc_log) {
 		if (data == NULL || len == 0)
 			ipc_log_string(ctl_ep.ipc_log, "%3s(%d): (null)\n",
@@ -202,6 +210,7 @@ void rmnet_ctl_log(enum rmnet_ctl_log_lvl lvl, const char *msg,
 			ipc_log_string(ctl_ep.ipc_log, "%3s(%d): %*ph\n",
 				       msg, rc, len > 32 ? 32 : len, data);
 	}
+#endif
 }
 EXPORT_SYMBOL(rmnet_ctl_log);
 

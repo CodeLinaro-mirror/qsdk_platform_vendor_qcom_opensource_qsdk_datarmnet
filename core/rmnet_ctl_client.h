@@ -38,6 +38,8 @@ struct rmnet_ctl_dev {
 
 void rmnet_ctl_endpoint_post(const void *data, size_t len);
 void rmnet_ctl_endpoint_setdev(const struct rmnet_ctl_dev *dev);
+#ifdef LINUX_5_4
 void rmnet_ctl_set_dbgfs(bool enable);
+#endif
 
 #endif /* _RMNET_CTL_CLIENT_H_ */
