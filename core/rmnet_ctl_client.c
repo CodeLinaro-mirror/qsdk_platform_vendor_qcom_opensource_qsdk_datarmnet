@@ -33,10 +33,12 @@ struct rmnet_ctl_endpoint {
 #define CONFIG_RMNET_CTL_DEBUG 1
 #endif
 
+#ifdef LINUX_5_4
 #ifdef CONFIG_RMNET_CTL_DEBUG
 static u8 ipc_log_lvl = RMNET_CTL_LOG_DEBUG;
 #else
 static u8 ipc_log_lvl = RMNET_CTL_LOG_ERR;
+#endif
 #endif
 
 static DEFINE_SPINLOCK(client_lock);
